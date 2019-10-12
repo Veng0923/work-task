@@ -8,7 +8,7 @@ class LoginService extends Service {
         if (!isLogin) {
             return {status: 0, message: '账号或密码错误!'};
         }
-        return this.ctx.service.verify.verify(code).then(isCode => {
+        return this.ctx.service.verify.verify(code).then((isCode) => {
             if (!isCode) {
                 return {status: 1, message: "验证码错误!"}
             } else {
@@ -16,6 +16,7 @@ class LoginService extends Service {
                     username: username,
                     password: password,
                 }, "veng", {expiresIn: "1h"});
+                this.ctx.session.token = token;
                 return {status: 200, token};
             }
         });

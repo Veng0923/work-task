@@ -49,7 +49,7 @@
                         alert(data.message);
                     }else{
                         this.$store.dispatch("changeToken",data.token);
-                        this.$router.push('/index');
+                        this.$router.push('/');
                     }
                 });
             },

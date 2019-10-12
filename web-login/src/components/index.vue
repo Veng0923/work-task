@@ -1,16 +1,17 @@
 <template>
     <div>
-        {{message}}
+        <Aside></Aside>
+        <router-view></router-view>
     </div>
 </template>
 
 <script>
+    import Aside from "./aside/aside";
     export default {
         name: "index",
+        components: {Aside},
         computed:{
-            message(){
-                return this.$store.getters.getToken;
-            }
+
         }
     }
 </script>
