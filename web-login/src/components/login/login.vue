@@ -10,7 +10,7 @@
                     <el-input type="password" v-model="form.password"></el-input>
                 </el-form-item>
                 <el-form-item label="验证码：">
-                    <el-col :span="15">
+                    <el-col :span="10">
                         <el-input type="text" v-model="form.code"></el-input>
                     </el-col>
                     <span ref="code" @click="getCode"></span>
