@@ -45,7 +45,7 @@
 
 <script>
     export default {
-        name: "aside",
+        name: "layout-aside",
 
     }
 </script>

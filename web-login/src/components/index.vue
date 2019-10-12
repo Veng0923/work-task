@@ -1,15 +1,16 @@
 <template>
     <div>
-        <Aside></Aside>
+        <layout-aside></layout-aside>
         <router-view></router-view>
     </div>
 </template>
 
 <script>
-    import Aside from "./aside/aside";
+
+    import LayoutAside from "./aside/aside";
     export default {
         name: "index",
-        components: {Aside},
+        components: {LayoutAside},
         computed:{
 
         }

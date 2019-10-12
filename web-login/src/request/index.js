@@ -1,11 +1,12 @@
 import fly from 'flyio';
-import {Cookies} from "../utils/Cookies";
+// import {Cookies} from "../utils/Cookies";
 
-const csrf_token = Cookies.getCookies('csrfToken');
+// const csrf_token = Cookies.getCookies('csrfToken');
 fly.interceptors.request.use((request)=>{
     //给所有请求添加自定义header
-    request.headers["x-csrf-token"]= csrf_token;
+    // request.headers["x-csrf-token"]= csrf_token;
     request.withCredentials = true;
+    // request.body.credentials = true;
     return request;
 });
 

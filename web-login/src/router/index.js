@@ -11,15 +11,11 @@ const routes = [
         path: `/index`,
         component: index,
         meta:{requiresAuth: true},
-        children:[
-            {
-                path: `file`,
-                component: file,
-            },
-        ],
+        redirect: '/',
     },
     {
         path: `/`,component: index,meta:{requiresAuth: true},
+        redirect: 'file',
         children:[
             {
                 path: `file`,
