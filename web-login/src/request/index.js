@@ -1,4 +1,5 @@
 import fly from 'flyio';
+import routerConfig from "./router-config";
 // import {Cookies} from "../utils/Cookies";
 
 // const csrf_token = Cookies.getCookies('csrfToken');
@@ -10,11 +11,8 @@ fly.interceptors.request.use((request)=>{
     return request;
 });
 
-const host = "http://localhost:7001";
-// const host = "";
 export async function login(username,password,code) {
-    const url = `${host}/login`;
-    return fly.post(url,{
+    return fly.post(routerConfig.login,{
         username,
         password,
         code,
@@ -23,8 +21,7 @@ export async function login(username,password,code) {
     });
 }
 export async function getCode() {
-    const url = `${host}/code`;
-    return fly.get(url,{}).then(response=>{
+    return fly.get(routerConfig.code,{}).then(response=>{
         return response.data;
     });
 }

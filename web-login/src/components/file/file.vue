@@ -93,6 +93,7 @@
 <script>
     import fileData from './file-data';
     import fileColumns from './file-column-setting';
+    import routerConfig from "../../request/router-config";
     export default {
         name: "list",
         data: function () {
@@ -108,7 +109,7 @@
                     fileName:'',
                     suffix: '',
                     description:'',
-                    uploadURL: "/upload"
+                    uploadURL: routerConfig.upload,
                 }
             }
         },

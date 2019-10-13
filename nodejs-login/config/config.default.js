@@ -4,6 +4,7 @@
 
 const mysqlConfig = require('./mysql-config');
 const securityConfig = require('./security-config');
+const multipartConfig = require('./multipart-config');
 
 module.exports = appInfo => {
     /**
@@ -26,6 +27,7 @@ module.exports = appInfo => {
     config.security = securityConfig.security;
     config.cors = securityConfig.cors;
     config.mysql = mysqlConfig;
+    config.multipart = multipartConfig;
     // add your user config here
     const userConfig = {
     // myAppName: 'egg',

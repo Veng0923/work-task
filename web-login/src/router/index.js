@@ -23,6 +23,7 @@ export const routes = [
                 meta:{
                     icon: 'el-icon-folder-opened',
                     title: `文件管理`,
+                    requiresAuth: true,
                 }
             },
         ],
