@@ -3,6 +3,7 @@
 'use strict';
 
 const mysqlConfig = require('./mysql-config');
+const securityConfig = require('./security-config');
 
 module.exports = appInfo => {
     /**
@@ -22,21 +23,8 @@ module.exports = appInfo => {
     config.static = {
         prefix: '/',
     };
-    config.security = {
-    // csrf: {
-    //   queryName: '_csrf', // 通过 query 传递 CSRF token 的默认字段为 _csrf
-    //   bodyName: '_csrf', // 通过 body 传递 CSRF token 的默认字段为 _csrf
-    // },
-        csrf: {
-            enable: false,
-        },
-        domainWhiteList: [ 'http://localhost:8080' ],
-    };
-    config.cors = {
-    // origin:'http://locahost:8080',
-        credentials: true,
-        allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH,OPTIONS',
-    };
+    config.security = securityConfig.security;
+    config.cors = securityConfig.cors;
     config.mysql = mysqlConfig;
     // add your user config here
     const userConfig = {
