@@ -1,7 +1,12 @@
 <template>
     <div>
-        <layout-aside></layout-aside>
-        <router-view></router-view>
+        <el-container>
+            <layout-aside :background-color="asideBackgroundColor"></layout-aside>
+            <el-container>
+                <router-view></router-view>
+            </el-container>
+        </el-container>
+
     </div>
 </template>
 
@@ -11,6 +16,11 @@
     export default {
         name: "index",
         components: {LayoutAside},
+        data: function(){
+            return {
+                asideBackgroundColor: "#545c64",
+            }
+        },
         computed:{
 
         }

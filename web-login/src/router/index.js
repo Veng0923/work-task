@@ -6,7 +6,7 @@ import login from "@/components/login/login";
 import file from "../components/file/file";
 Vue.use(VueRouter);
 
-const routes = [
+export const routes = [
     {
         path: `/index`,
         component: index,
@@ -20,6 +20,10 @@ const routes = [
             {
                 path: `file`,
                 component: file,
+                meta:{
+                    icon: 'el-icon-folder-opened',
+                    title: `文件管理`,
+                }
             },
         ],
     },
@@ -29,6 +33,7 @@ const router = new VueRouter({
     // mode: 'history',
     routes,
 });
+
 router.beforeEach((to, from, next) => {
     if (to.meta.requiresAuth) {
         if (!sessionStorage.getItem("token") || sessionStorage.token === '') {
