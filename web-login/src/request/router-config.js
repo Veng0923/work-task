@@ -13,5 +13,7 @@ const routerConfig = {
     code: `${origin}/code`,
     // 上传文件url
     upload: `${origin}/upload`,
+    // 获取文件
+    file: `${origin}/file`,
 };
 export default routerConfig;

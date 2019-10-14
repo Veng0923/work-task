@@ -13,6 +13,8 @@ module.exports = {
         password: 'root',
         // 数据库名
         database: 'filemanager',
+
+        debug: true,
     },
     // 是否加载到 app 上，默认开启
     app: true,

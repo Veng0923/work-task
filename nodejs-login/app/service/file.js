@@ -31,6 +31,22 @@ class fileService extends Service {
         }
         return { status: 200, message: 'success' };
     }
+
+    async query(query, page = 1, size = 10) {
+        const { ctx } = this;
+        const mysql = this.app.mysql;
+        const loginUsername = ctx.session.loginUsername;
+        let sql = 'select count(*) from `user_file` uf,`file` f where uf.file_id = f.id and uf.username = ? and f.file_name like ?';
+        // 总数量
+        query = query === undefined ? '%%' : `%${query}%`;
+        let total = await mysql.query(sql, [ loginUsername, query ]);
+        total = total[0]['count(*)'];
+        sql = `select f.id,f.file_name fileName,f.file_size fileSize,f.upload_time uploadTime, f.description 
+            from \`user_file\` uf,\`file\` f
+            where uf.file_id = f.id and uf.username = ? and f.file_name like ? limit ?,?`;
+        const fileList = await mysql.query(sql, [ loginUsername, query, (page - 1) * size, (page - 1) * size + size ]);
+        return { status: 200, message: 'success', data: { totalPage: Math.trunc(((total + size - 1) / size)), fileList, currentPage: page, size } };
+    }
 }
 
 module.exports = fileService;

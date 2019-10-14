@@ -11,7 +11,7 @@
                 </el-form-item>
                 <el-form-item label="验证码：">
                     <el-col :span="10">
-                        <el-input type="text" v-model="form.code"></el-input>
+                        <el-input type="text" v-model="form.code" @keydown.enter.native="onSubmit"></el-input>
                     </el-col>
                     <span ref="code" @click="getCode"></span>
                 </el-form-item>

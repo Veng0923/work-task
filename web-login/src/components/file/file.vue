@@ -36,6 +36,7 @@
                         :key="item.prop"
                         :prop="item.prop"
                         :label="item.title"
+                        :formatter="item.formatter"
                         :width="item.width">
                 </el-table-column>
                 <el-table-column
@@ -55,6 +56,16 @@
                     </template>
                 </el-table-column>
             </el-table>
+        </el-row>
+        <el-row>
+            <el-col :span="1">
+                <el-pagination
+                        background
+                        layout="prev, pager, next"
+                        :page-size="size"
+                        :page-count="totalPage">
+                </el-pagination>
+            </el-col>
         </el-row>
         <el-dialog
                 width="40%"
@@ -94,11 +105,16 @@
     import fileData from './file-data';
     import fileColumns from './file-column-setting';
     import routerConfig from "../../request/router-config";
+    import {getFileList} from "../../request";
+
     export default {
         name: "list",
         data: function () {
             return {
                 queryText: '',
+                page:1,
+                size:10,
+                totalPage:1,
                 tableData: fileData,
                 columns: fileColumns.columns,
                 toggleDelete: false,
@@ -112,6 +128,9 @@
                     uploadURL: routerConfig.upload,
                 }
             }
+        },
+        created(){
+            this.getFileList();
         },
         methods:{
             query(){
@@ -140,6 +159,7 @@
                 }
             },
             handleUploadSuccess(){
+                this.getFileList();
                 this.isDialogShow = false;
                 this.$notify({
                     title: "Success",
@@ -170,6 +190,12 @@
             },
             handleDownload(index,row){
 
+            },
+            getFileList(){
+                getFileList(this.queryText,this.page,this.size).then(data=>{
+                    this.tableData = data.fileList;
+                    this.totalPage = data.totalPage;
+                });
             },
         }
     }

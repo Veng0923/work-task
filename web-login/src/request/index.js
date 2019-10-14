@@ -25,3 +25,9 @@ export async function getCode() {
         return response.data;
     });
 }
+
+export async function getFileList( query, page, size ) {
+    return fly.get(routerConfig.file,{query,page,size}).then(response=>{
+        return response.data.data;
+    });
+}
