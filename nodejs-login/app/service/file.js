@@ -4,6 +4,13 @@ const Service = require('egg').Service;
 const fs = require('fs');
 
 class fileService extends Service {
+    /*
+     * 上传文件
+     * @param fileName 文件名
+     * @param description 文件描述
+     * @param file 上传的文件
+     * @returns {Promise<{message: string, status: number}>}
+     */
     async upload(fileName, description, file) {
         const { size: fileSize, birthtime: uploadTime } = await fs.statSync(file.filepath);
         const mysql = this.app.mysql;
@@ -38,7 +45,13 @@ class fileService extends Service {
         const loginUsername = ctx.session.loginUsername;
         let sql = 'select count(*) from `user_file` uf,`file` f where uf.file_id = f.id and uf.username = ? and f.file_name like ?';
         // 总数量
-        query = query === undefined ? '%%' : `%${query}%`;
+        query = query === undefined || query === '' ? '%%' : `%${query}%`;
+        try {
+            page = Number.parseInt(page);
+            size = Number.parseInt(size);
+        } catch (e) {
+            throw e;
+        }
         let total = await mysql.query(sql, [ loginUsername, query ]);
         total = total[0]['count(*)'];
         sql = `select f.id,f.file_name fileName,f.file_size fileSize,f.upload_time uploadTime, f.description 
@@ -46,6 +59,13 @@ class fileService extends Service {
             where uf.file_id = f.id and uf.username = ? and f.file_name like ? limit ?,?`;
         const fileList = await mysql.query(sql, [ loginUsername, query, (page - 1) * size, (page - 1) * size + size ]);
         return { status: 200, message: 'success', data: { totalPage: Math.trunc(((total + size - 1) / size)), fileList, currentPage: page, size } };
+    }
+
+    async delete(list) {
+        const sql = `delete from \`file\ f
+        where f.id in ?`;
+        await this.app.mysql.query(sql, [ list ]);
+        return { status: 200, message: 'success' };
     }
 }
 

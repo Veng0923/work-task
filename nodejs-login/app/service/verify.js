@@ -1,9 +1,11 @@
+'use strict';
+
 const Service = require('egg').Service;
 const svgCaptcha = require('svg-captcha');
 class VerifyService extends Service {
     async produce() {
         const svg = svgCaptcha.create({
-            size:4,
+            size: 4,
             noise: 2,
             color: true,
             width: 100,
@@ -13,7 +15,7 @@ class VerifyService extends Service {
         this.ctx.session.logincode = svg.text;
         return svg.data;
     }
-    async verify(code){
+    async verify(code) {
         const logincode = this.ctx.session.logincode;
         return logincode.toLowerCase() === code.toLowerCase();
     }

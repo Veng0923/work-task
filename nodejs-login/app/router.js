@@ -11,4 +11,5 @@ module.exports = app => {
     router.get('/code', controller.login.verify.produce);
     router.post('/upload', controller.file.file.upload);
     router.get('/file', controller.file.file.query);
+    router.delete('/file', controller.file.file.delete);
 };

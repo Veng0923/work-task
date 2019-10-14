@@ -47,6 +47,7 @@ CREATE TABLE `user` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `username_UNIQUE` (`username`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+insert `user`(`username`,`password`) VALUES('veng','123456');
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --

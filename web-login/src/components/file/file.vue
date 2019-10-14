@@ -7,6 +7,7 @@
                 <el-input
                         placeholder="请输入检索内容"
                         @keydown.enter.native="query"
+                        @change="query"
                         v-model="queryText">
                     <i slot="prefix" class="el-input__icon el-icon-search"></i>
                 </el-input>
@@ -70,7 +71,7 @@
         <el-dialog
                 width="40%"
                 :visible.sync="isDialogShow"
-                title="添加文件">
+                :title="string.addFile">
             <el-row>
                 <el-upload
                         ref="upload"
@@ -87,14 +88,14 @@
                 </el-upload>
             </el-row>
             <el-form label-width="90px">
-                <el-form-item label="文件名称：">
+                <el-form-item :label="string.fileName">
                     <el-input v-model="dialogForm.fileName"></el-input>
                 </el-form-item>
-                <el-form-item label="文件描述：">
+                <el-form-item :label="string.fileDescription">
                     <el-input  type="textarea" :rows="3" v-model="dialogForm.description"></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" @click="uploadFile">上传到服务器</el-button>
+                    <el-button type="primary" @click="uploadFile">{{string.uploadToServer}}</el-button>
                 </el-form-item>
             </el-form>
         </el-dialog>
@@ -105,23 +106,25 @@
     import fileData from './file-data';
     import fileColumns from './file-column-setting';
     import routerConfig from "../../request/router-config";
-    import {getFileList} from "../../request";
-
+    import {getFileList,deleteFiles} from "../../request";
+    import {string} from "./resource";
     export default {
         name: "list",
         data: function () {
             return {
                 queryText: '',
+                string: string,
                 page:1,
                 size:10,
                 totalPage:1,
                 tableData: fileData,
                 columns: fileColumns.columns,
                 toggleDelete: false,
-                multipleSelection:[],
-                deleteText:"批量删除",
+                multipleSelection: [],
+                deleteText: string.batchDelete,
                 isDialogShow: false,
-                dialogForm:{
+                deleteList: [],
+                dialogForm: {
                     fileName:'',
                     suffix: '',
                     description:'',
@@ -134,7 +137,7 @@
         },
         methods:{
             query(){
-                alert(`search:${this.queryText}`);
+                this.getFileList();
             },
             handleSelectionChange(val){
                 this.multipleSelection = val;
@@ -146,10 +149,11 @@
                 if(this.toggleDelete){
                     alert("删除所选文件");
                     this.toggleDelete = false;
-                    this.deleteText = '批量删除';
+                    this.deleteText = string.batchDelete;
+                    deleteFiles(this.deleteList);
                 }else{
                     this.toggleDelete = true;
-                    this.deleteText = "删除所选文件";
+                    this.deleteText = string.deleteSelectedFile;
                 }
             },
             selectFile(file,fileList){
@@ -162,15 +166,19 @@
                 this.getFileList();
                 this.isDialogShow = false;
                 this.$notify({
-                    title: "Success",
-                    message: "文件上传成功",
-                    type: 'success'
+                    title: string.success,
+                    message: string.fileUploadSuccess,
+                    type: string.success,
                 });
             },
-            handleUploadError(){
+            handleUploadError(error){
+                let message = string.fileUploadFailed;
+                if (error.status === 400) {
+                    message = string.fileFormatNotSupport;
+                }
                 this.$notify.error({
                     title: "Error",
-                    message: "文件上传失败",
+                    message,
                 });
             },
             uploadFile(){
@@ -178,7 +186,7 @@
                     this.$refs.upload.submit();
                 }else{
                     this.$notify({
-                        message: "请要选择上传的文件",
+                        message: string.selectUploadFile,
                     });
                 }
             },
@@ -186,7 +194,13 @@
 
             },
             handleDelete(index,row){
-                this.tableData.splice(index,1);
+                deleteFiles([row.id,1]).then(result=>{
+                    if (result.status === 200) {
+                        this.tableData.splice(index,1);
+                    }else{
+                        alert(result.message);
+                    }
+                });
             },
             handleDownload(index,row){
 

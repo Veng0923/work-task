@@ -47,6 +47,7 @@
                     const status = data.status;
                     if (status<2){
                         alert(data.message);
+                        this.getCode();
                     }else{
                         this.$store.dispatch("changeToken",data.token);
                         this.$router.push('/');
