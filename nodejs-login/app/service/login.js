@@ -19,6 +19,7 @@ class LoginService extends Service {
                 password,
             }, 'veng', { expiresIn: '1h' });
             this.ctx.session.token = token;
+            this.ctx.session.loginUsername = username;
             return { status: 200, token };
 
         });
