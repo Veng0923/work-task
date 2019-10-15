@@ -18,10 +18,12 @@ export const string =  {
     save: '保存',
     serverError: '服务器异常',
     updateFileSuccess: '修改文件成功',
+    descriptionHintText: '限制在250字以内',
 };
 
 export const value = {
     notifyShowTime: 1800,
+    descriptionMaxLength: 250,
 };
 
 export const color = {

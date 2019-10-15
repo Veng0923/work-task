@@ -6,6 +6,11 @@ export default {
       prop: "id"
     },
     {
+      title: "FastDFS_ID",
+      width: 200,
+      prop: "fastID",
+    },
+    {
       title: "文件名称",
       width: 180,
       prop: "fileName"

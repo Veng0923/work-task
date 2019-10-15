@@ -92,7 +92,9 @@
                     <el-input v-model="dialogForm.fileName"></el-input>
                 </el-form-item>
                 <el-form-item :label="string.fileDescription">
-                    <el-input  type="textarea" :rows="3" v-model="dialogForm.description"></el-input>
+                    <el-input :show-word-limit="true" :maxlength="value.descriptionMaxLength"
+                              :placeholder="string.descriptionHintText"
+                              type="textarea" :rows="3" v-model="dialogForm.description"></el-input>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="uploadFile">{{string.uploadToServer}}</el-button>
@@ -108,7 +110,9 @@
                     <el-input v-model="editFormDialog.fileName"></el-input>
                 </el-form-item>
                 <el-form-item :label="string.fileDescription">
-                    <el-input  type="textarea" :rows="3" v-model="editFormDialog.description"></el-input>
+                    <el-input :show-word-limit="true" :maxlength="value.descriptionMaxLength"
+                              :placeholder="string.descriptionHintText"
+                              type="textarea" :rows="3" v-model="editFormDialog.description"></el-input>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="updateFile">{{string.save}}</el-button>
@@ -130,6 +134,7 @@
             return {
                 queryText: '',
                 string: string,
+                value: value,
                 page:1,
                 size:10,
                 totalPage:1,
