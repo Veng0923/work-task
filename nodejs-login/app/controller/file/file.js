@@ -33,7 +33,7 @@ class FileController extends Controller {
      */
     async delete() {
         const { ctx } = this;
-        const { list } = ctx.params;
+        const { list } = ctx.request.body;
         ctx.body = await ctx.service.file.delete(list);
     }
 

@@ -18,6 +18,7 @@ class fileService extends Service {
         const { size: fileSize, birthtime: uploadTime } = await fs.statSync(file.filepath);
         const mysql = this.app.mysql;
         const extname = path.extname(file.filepath);
+        // 上传文件到 FastDFS 文件系统上
         const fileId = await fastDFSClinet.upload(file.filepath, {
             ext: extname,
         }).then(fileId => {
@@ -75,7 +76,7 @@ class fileService extends Service {
         }
         let total = await mysql.query(sql, [ loginUsername, query ]);
         total = total[0]['count(*)'];
-        sql = `select f.id,f.file_name fileName,f.file_size fileSize,f.upload_time uploadTime, f.description 
+        sql = `select f.id,f.file_name fileName,f.file_size fileSize,f.upload_time uploadTime, f.description ,f.fast_id fastID
             from \`user_file\` uf,\`file\` f
             where uf.file_id = f.id and uf.username = ? and f.file_name like ? limit ?,?`;
         const fileList = await mysql.query(sql, [ loginUsername, query, (page - 1) * size, (page - 1) * size + size ]);
@@ -87,7 +88,7 @@ class fileService extends Service {
     }
 
     async delete(list) {
-        list = list.split(',');
+        // list = list.split(',');
         const transaction = await this.app.mysql.beginTransaction();
         try {
             let sql = 'delete from `file` f where f.id in (?)';

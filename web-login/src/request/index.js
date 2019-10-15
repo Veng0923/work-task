@@ -1,8 +1,13 @@
 import fly from 'flyio';
 import routerConfig from "./router-config";
 import router from "../router";
-// import {Cookies} from "../utils/Cookies";
+import Axios from "axios";
 
+// import {Cookies} from "../utils/Cookies";
+Axios.interceptors.request.use(config=>{
+    config.withCredentials = true;
+    return config;
+});
 // const csrf_token = Cookies.getCookies('csrfToken');
 fly.interceptors.request.use((request)=>{
     //给所有请求添加自定义header
@@ -66,11 +71,8 @@ export async function deleteFiles(list){
     // return fly.delete(routerConfig.file+`/${list}`).then(response=>{
     //     return response.data;
     // });
-
-    return fly.delete(routerConfig.file,{list},{
-        headers:{
-            "content-type":"application/json;charset=utf-8",
-        }
+    return Axios.delete(routerConfig.file,{
+        data:{list},
     }).then(response=>{
         return response.data;
     });
@@ -88,3 +90,4 @@ export async function updateFile(id,fileName, description) {
         return response.data;
     });
 }
+
