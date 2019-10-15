@@ -3,6 +3,9 @@
 const Service = require('egg').Service;
 const fs = require('fs');
 const responseCode = require('../config/responseCode');
+const fastDFSClinet = require('../config/fastDFS-config');
+const path = require('path');
+
 class fileService extends Service {
     /*
      * 上传文件
@@ -14,11 +17,18 @@ class fileService extends Service {
     async upload(fileName, description, file) {
         const { size: fileSize, birthtime: uploadTime } = await fs.statSync(file.filepath);
         const mysql = this.app.mysql;
+        const extname = path.extname(file.filepath);
+        const fileId = await fastDFSClinet.upload(file.filepath, {
+            ext: extname,
+        }).then(fileId => {
+            return fileId;
+        }).catch(error => { throw error; });
         const transaction = await mysql.beginTransaction();
         try {
             const insert_file = await transaction.insert('file', {
                 file_name: fileName,
                 description,
+                fast_id: fileId,
                 file_size: fileSize,
                 upload_time: uploadTime,
             });
@@ -44,7 +54,7 @@ class fileService extends Service {
                 }
             });
         }
-        return { status: 200, message: 'success' };
+        return responseCode.success;
     }
 
     async query(query, page = 1, size = 10) {

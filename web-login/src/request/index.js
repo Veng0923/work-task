@@ -63,7 +63,15 @@ export async function getFileList( query, page, size ) {
  * @returns {Promise<*>}
  */
 export async function deleteFiles(list){
-    return fly.delete(routerConfig.file+`/${list}`).then(response=>{
+    // return fly.delete(routerConfig.file+`/${list}`).then(response=>{
+    //     return response.data;
+    // });
+
+    return fly.delete(routerConfig.file,{list},{
+        headers:{
+            "content-type":"application/json;charset=utf-8",
+        }
+    }).then(response=>{
         return response.data;
     });
 }
