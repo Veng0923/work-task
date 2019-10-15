@@ -2,7 +2,7 @@
 
 const Service = require('egg').Service;
 const fs = require('fs');
-
+const responseCode = require('../config/responseCode');
 class fileService extends Service {
     /*
      * 上传文件
@@ -16,8 +16,16 @@ class fileService extends Service {
         const mysql = this.app.mysql;
         const transaction = await mysql.beginTransaction();
         try {
-            const insert_file = await transaction.insert('file', { file_name: fileName, description, file_size: fileSize, upload_time: uploadTime });
+            const insert_file = await transaction.insert('file', {
+                file_name: fileName,
+                description,
+                file_size: fileSize,
+                upload_time: uploadTime,
+            });
             const loginUsername = await this.ctx.session.loginUsername;
+            if (loginUsername === undefined || loginUsername === null) {
+                return responseCode.notLogin;
+            }
             await transaction.insert('user_file', { username: loginUsername, file_id: insert_file.insertId });
             await transaction.commit();
         } catch (error) {
@@ -43,6 +51,9 @@ class fileService extends Service {
         const { ctx } = this;
         const mysql = this.app.mysql;
         const loginUsername = ctx.session.loginUsername;
+        if (loginUsername === undefined || loginUsername === null) {
+            return responseCode.notLogin;
+        }
         let sql = 'select count(*) from `user_file` uf,`file` f where uf.file_id = f.id and uf.username = ? and f.file_name like ?';
         // 总数量
         query = query === undefined || query === '' ? '%%' : `%${query}%`;
@@ -58,14 +69,40 @@ class fileService extends Service {
             from \`user_file\` uf,\`file\` f
             where uf.file_id = f.id and uf.username = ? and f.file_name like ? limit ?,?`;
         const fileList = await mysql.query(sql, [ loginUsername, query, (page - 1) * size, (page - 1) * size + size ]);
-        return { status: 200, message: 'success', data: { totalPage: Math.trunc(((total + size - 1) / size)), fileList, currentPage: page, size } };
+        return {
+            status: 200,
+            message: 'success',
+            data: { totalPage: Math.trunc(((total + size - 1) / size)), fileList, currentPage: page, size },
+        };
     }
 
     async delete(list) {
-        const sql = `delete from \`file\ f
-        where f.id in ?`;
-        await this.app.mysql.query(sql, [ list ]);
-        return { status: 200, message: 'success' };
+        list = list.split(',');
+        const transaction = await this.app.mysql.beginTransaction();
+        try {
+            let sql = 'delete from `file` f where f.id in (?)';
+            await transaction.query(sql, [ list ]);
+            const loginUsername = this.ctx.session.loginUsername;
+            if (loginUsername === undefined || loginUsername === null) {
+                return responseCode.notLogin;
+            }
+            sql = 'delete from `user_file` where username=? and file_id in (?)';
+            await transaction.query(sql, [ loginUsername, list ]);
+            await transaction.commit();
+        } catch (e) {
+            await transaction.rollback();
+            throw e;
+        }
+        return responseCode.success;
+    }
+
+    async update(id, fileName, description) {
+        try {
+            await this.app.mysql.update('file', { id, file_name: fileName, description });
+            return responseCode.success;
+        } catch (e) {
+            throw e;
+        }
     }
 }
 

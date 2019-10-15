@@ -13,7 +13,7 @@
                 </el-input>
             </el-col>
             <el-col :span="2">
-                <el-button type="primary" @click="addFile">上传文件</el-button>
+                <el-button type="primary" @click="addFile">{{string.uploadFile}}</el-button>
             </el-col>
             <el-col :span="2">
                 <el-button type="danger" @click="deleteFile">{{deleteText}}</el-button>
@@ -99,6 +99,22 @@
                 </el-form-item>
             </el-form>
         </el-dialog>
+        <el-dialog
+                width="40%"
+                :visible.sync="isEditDialogShow"
+                :title="string.editFile">
+            <el-form label-width="90px">
+                <el-form-item :label="string.fileName">
+                    <el-input v-model="editFormDialog.fileName"></el-input>
+                </el-form-item>
+                <el-form-item :label="string.fileDescription">
+                    <el-input  type="textarea" :rows="3" v-model="editFormDialog.description"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="updateFile">{{string.save}}</el-button>
+                </el-form-item>
+            </el-form>
+        </el-dialog>
     </div>
 </template>
 
@@ -106,8 +122,8 @@
     import fileData from './file-data';
     import fileColumns from './file-column-setting';
     import routerConfig from "../../request/router-config";
-    import {getFileList,deleteFiles} from "../../request";
-    import {string} from "./resource";
+    import {getFileList,deleteFiles,updateFile} from "../../request";
+    import {string,value} from "./resource";
     export default {
         name: "list",
         data: function () {
@@ -123,17 +139,26 @@
                 multipleSelection: [],
                 deleteText: string.batchDelete,
                 isDialogShow: false,
+                isEditDialogShow: false,
                 deleteList: [],
                 dialogForm: {
                     fileName:'',
                     suffix: '',
                     description:'',
                     uploadURL: routerConfig.upload,
-                }
+                },
+                editFormDialog: {
+                    fileName:'',
+                    description:'',
+                },
+                updateIndex: '',
             }
         },
         created(){
             this.getFileList();
+        },
+        watch:{
+
         },
         methods:{
             query(){
@@ -147,10 +172,16 @@
             },
             deleteFile(){
                 if(this.toggleDelete){
-                    alert("删除所选文件");
                     this.toggleDelete = false;
                     this.deleteText = string.batchDelete;
-                    deleteFiles(this.deleteList);
+                    this.multipleSelection.forEach(value => this.deleteList.push(value.id));
+                    this.deleteList.length === 0?alert(string.notSelectFile):
+                        deleteFiles(this.deleteList).then(result=>{
+                            if (result.status === 200) {
+                                this.notify(string.deleteFileSuccess);
+                                this.getFileList();
+                            }
+                        });
                 }else{
                     this.toggleDelete = true;
                     this.deleteText = string.deleteSelectedFile;
@@ -165,37 +196,32 @@
             handleUploadSuccess(){
                 this.getFileList();
                 this.isDialogShow = false;
-                this.$notify({
-                    title: string.success,
-                    message: string.fileUploadSuccess,
-                    type: string.success,
-                });
+                this.notify(string.fileUploadSuccess);
             },
             handleUploadError(error){
                 let message = string.fileUploadFailed;
                 if (error.status === 400) {
                     message = string.fileFormatNotSupport;
                 }
-                this.$notify.error({
-                    title: "Error",
-                    message,
-                });
+                this.notify(message,string.error,string.error);
             },
             uploadFile(){
                 if (this.$refs.upload.uploadFiles.length>0){
                     this.$refs.upload.submit();
                 }else{
-                    this.$notify({
-                        message: string.selectUploadFile,
-                    });
+                    this.$notify({message: string.selectUploadFile,});
                 }
             },
             handleEdit(index,row){
-
+                this.editFormDialog.fileName = row.fileName;
+                this.editFormDialog.description = row.description;
+                this.isEditDialogShow = true;
+                this.updateIndex = index;
             },
             handleDelete(index,row){
                 deleteFiles([row.id,1]).then(result=>{
                     if (result.status === 200) {
+                        this.notify(string.deleteFileSuccess);
                         this.tableData.splice(index,1);
                     }else{
                         alert(result.message);
@@ -211,6 +237,25 @@
                     this.totalPage = data.totalPage;
                 });
             },
+            notify(message,title=string.success,type=string.success){
+                this.$notify({title,message,type,duration: value.notifyShowTime});
+            },
+            updateFile(){
+                const {fileName,description} = this.editFormDialog;
+                const row = this.tableData[this.updateIndex];
+                const id = row.id;
+                updateFile(id,fileName,description).then(result=>{
+                    if (result.status === 200) {
+                        this.tableData.splice(this.updateIndex,1,Object.assign({},row,this.editFormDialog));
+                        const {success,updateFileSuccess} = string;
+                        this.notify(updateFileSuccess,success,success);
+                        this.isEditDialogShow = false;
+                    }else{
+                        const {error,serverError} = string;
+                        this.notify(serverError,error,error);
+                    }
+                });
+            }
         }
     }
 </script>

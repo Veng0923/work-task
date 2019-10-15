@@ -1,5 +1,6 @@
 import fly from 'flyio';
 import routerConfig from "./router-config";
+import router from "../router";
 // import {Cookies} from "../utils/Cookies";
 
 // const csrf_token = Cookies.getCookies('csrfToken');
@@ -10,7 +11,12 @@ fly.interceptors.request.use((request)=>{
     // request.body.credentials = true;
     return request;
 });
-
+fly.interceptors.response.use(response=>{
+    const status = response.data.status;
+    if (status === 410){
+        router.push('/login');
+    }
+});
 /**
  * 登陆验证
  * @param username 用户账号
@@ -57,12 +63,20 @@ export async function getFileList( query, page, size ) {
  * @returns {Promise<*>}
  */
 export async function deleteFiles(list){
-    console.log(list);
-    // let formData = new FormData();
-    // formData.append("list",list);
-    return fly.request(routerConfig.file,null,{headers:{
-            "content-type":"application/x-www-form-urlencoded"
-        },method: 'delete',body:{list}}).then(response=>{
+    return fly.delete(routerConfig.file+`/${list}`).then(response=>{
+        return response.data;
+    });
+}
+
+/**
+ * 修改文件信息
+ * @param id 文件id
+ * @param fileName 文件名
+ * @param description 文件描述
+ * @returns {Promise<*>}
+ */
+export async function updateFile(id,fileName, description) {
+    return fly.put(`${routerConfig.file}/${id}`,{fileName,description}).then(response=>{
         return response.data;
     });
 }
