@@ -146,6 +146,7 @@ class fileService extends Service {
         await fastDFSClinet.download(fastId, writer);
         this.ctx.set('file-name', `${fileName}`);
         this.ctx.body = fs.createReadStream(fileName);
+        fs.unlink(fileName);
     }
 }
 

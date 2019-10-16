@@ -133,8 +133,7 @@
 <script>
     import fileData from './file-data';
     import fileColumns from './file-column-setting';
-    import routerConfig from "../../request/router-config";
-    import {csrfToken} from "../../request/router-config";
+    import routerConfig,{csrfToken} from "../../request/router-config";
     import {getFileList,deleteFiles,updateFile,downloadFile} from "../../request";
     import {string,value} from "./resource";
     export default {
@@ -147,8 +146,8 @@
                 page:1,
                 size:7,
                 totalPage:1,
-                csrfToken: csrfToken,
                 tableData: fileData,
+                csrfToken: csrfToken,
                 loading: false,
                 columns: fileColumns.columns,
                 toggleDelete: false,

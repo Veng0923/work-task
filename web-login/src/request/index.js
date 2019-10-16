@@ -1,20 +1,11 @@
 import fly from 'flyio';
-import routerConfig from "./router-config";
+import routerConfig, {csrfToken} from "./router-config";
 import router from "../router";
-import Axios from "axios";
 import store from "../store";
-import {csrfToken} from "./router-config";
-
-Axios.interceptors.request.use(config => {
-    config.withCredentials = true;
-    return config;
-});
-
 
 fly.interceptors.request.use((request) => {
-    //给所有请求添加自定义header
-    request.headers["x-csrf-token"]= csrfToken;
     // request.withCredentials = true;
+    request.headers['x-csrf-token'] = csrfToken;
     request.headers["token"] = store.getters.getToken;
     return request;
 });
@@ -22,14 +13,8 @@ fly.interceptors.response.use(response => {
     const status = response.data.status;
     if (status === 410) {
         router.push('/login').catch(e=>{
-            console.log(e);});
-    }
-});
-Axios.interceptors.response.use(response => {
-    const status = response.data.status;
-    if (status === 410) {
-        router.push('/login').catch(e=>{
-            console.log(e);});
+            throw e;
+        });
     }
 });
 
