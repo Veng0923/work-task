@@ -13,7 +13,7 @@ fs.readdir(distDir, (error, files) => {
                 if (!error) {
                     // console.log(stat);
                     if (stat.isDirectory()) {
-                        const targetPath = `${publicTargetPath}/${file}`;
+                        const targetPath = `${publicTargetPath}`;
                         childProcess.execFile('cp',['-rf',sourcePath,targetPath]);
                     } else if (stat.isFile()) {
                         const sourceReadStream = fs.createReadStream(sourcePath);
