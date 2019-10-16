@@ -21,13 +21,15 @@ fly.interceptors.request.use((request) => {
 fly.interceptors.response.use(response => {
     const status = response.data.status;
     if (status === 410) {
-        router.push('/login').catch(e=>{});
+        router.push('/login').catch(e=>{
+            console.log(e);});
     }
 });
 Axios.interceptors.response.use(response => {
     const status = response.data.status;
     if (status === 410) {
-        router.push('/login').catch(e=>{});
+        router.push('/login').catch(e=>{
+            console.log(e);});
     }
 });
 
