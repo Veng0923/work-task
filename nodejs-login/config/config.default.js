@@ -30,7 +30,7 @@ module.exports = appInfo => {
     config.multipart = multipartConfig;
     config.middleware = [ 'certification' ];
     config.certification = {
-        ignore: [ '/code', '/login' ],
+        ignore: [ '/', '/code', '/login' ],
     };
     // add your user config here
     const userConfig = {
