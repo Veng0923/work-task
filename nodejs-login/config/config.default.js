@@ -25,7 +25,7 @@ module.exports = appInfo => {
         prefix: '/',
     };
     config.security = securityConfig.security;
-    // config.cors = securityConfig.cors;
+    config.cors = securityConfig.cors;
     config.mysql = mysqlConfig;
     config.multipart = multipartConfig;
     config.middleware = [ 'certification' ];

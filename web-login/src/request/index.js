@@ -3,7 +3,6 @@ import routerConfig from "./router-config";
 import router from "../router";
 import Axios from "axios";
 import store from "../store";
-import {csrfToken} from "./router-config";
 
 Axios.interceptors.request.use(config => {
     config.withCredentials = true;
@@ -12,9 +11,7 @@ Axios.interceptors.request.use(config => {
 
 
 fly.interceptors.request.use((request) => {
-    //给所有请求添加自定义header
-    request.headers["x-csrf-token"]= csrfToken;
-    // request.withCredentials = true;
+    request.withCredentials = true;
     request.headers["token"] = store.getters.getToken;
     return request;
 });
