@@ -10,7 +10,7 @@ exports.security = {
     // },
     // domainWhiteList: [ 'http://localhost:8080' ],
 };
-exports.cors = {
-    credentials: true,
-    allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH,OPTIONS',
-};
+// exports.cors = {
+//     credentials: true,
+//     allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH,OPTIONS',
+// };
