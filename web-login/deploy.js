@@ -4,6 +4,7 @@ const distDir = './dist';
 const publicTargetPath = '../nodejs-login/app/public';
 const viewTargetPath = '../nodejs-login/app/view';
 const childProcess = require("child_process");
+
 fs.readdir(distDir, (error, files) => {
     if (!error) {
         files.forEach(file => {
@@ -13,7 +14,7 @@ fs.readdir(distDir, (error, files) => {
                     // console.log(stat);
                     if (stat.isDirectory()) {
                         const targetPath = `${publicTargetPath}/${file}`;
-                        childProcess.execFile('cp',['-r',sourcePath,targetPath]);
+                        childProcess.execFile('cp',['-rf',sourcePath,targetPath]);
                     } else if (stat.isFile()) {
                         const sourceReadStream = fs.createReadStream(sourcePath);
                         const targetPath = `${viewTargetPath}/${file}`;

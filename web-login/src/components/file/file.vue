@@ -88,7 +88,7 @@
                         :with-credentials="true"
                         :on-success="handleUploadSuccess"
                         :on-error="handleUploadError"
-                        :headers="{'x-crsf-token': csrfToken,token:this.$store.getters.getToken}"
+                        :headers="{'x-csrf-token': csrfToken,token:this.$store.getters.getToken}"
                         :data="{fileName:this.dialogForm.fileName,description: this.dialogForm.description}"
                         drag>
                     <i class="el-icon-upload"></i>

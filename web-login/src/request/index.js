@@ -6,7 +6,7 @@ import store from "../store";
 
 fly.interceptors.request.use((request) => {
     // request.withCredentials = true;
-    request.headers['x-crsf-token'] = csrfToken;
+    request.headers['x-csrf-token'] = csrfToken;
     request.headers["token"] = store.getters.getToken;
     return request;
 });
