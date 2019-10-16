@@ -88,7 +88,7 @@
                         :with-credentials="true"
                         :on-success="handleUploadSuccess"
                         :on-error="handleUploadError"
-                        :headers="{token:this.$store.getters.getToken}"
+                        :headers="{'x-crsf-token': csrfToken,token:this.$store.getters.getToken}"
                         :data="{fileName:this.dialogForm.fileName,description: this.dialogForm.description}"
                         drag>
                     <i class="el-icon-upload"></i>
@@ -133,7 +133,7 @@
 <script>
     import fileData from './file-data';
     import fileColumns from './file-column-setting';
-    import routerConfig from "../../request/router-config";
+    import routerConfig,{csrfToken} from "../../request/router-config";
     import {getFileList,deleteFiles,updateFile,downloadFile} from "../../request";
     import {string,value} from "./resource";
     export default {
@@ -147,6 +147,7 @@
                 size:7,
                 totalPage:1,
                 tableData: fileData,
+                csrfToken: csrfToken,
                 loading: false,
                 columns: fileColumns.columns,
                 toggleDelete: false,

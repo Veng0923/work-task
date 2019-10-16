@@ -1,30 +1,29 @@
 import fly from 'flyio';
-import routerConfig from "./router-config";
+import routerConfig, {csrfToken} from "./router-config";
 import router from "../router";
 import Axios from "axios";
 import store from "../store";
 
-Axios.interceptors.request.use(config => {
-    config.withCredentials = true;
-    return config;
-});
-
-
 fly.interceptors.request.use((request) => {
-    request.withCredentials = true;
+    // request.withCredentials = true;
+    request.headers['x-crsf-token'] = csrfToken;
     request.headers["token"] = store.getters.getToken;
     return request;
 });
 fly.interceptors.response.use(response => {
     const status = response.data.status;
     if (status === 410) {
-        router.push('/login').catch(e=>{});
+        router.push('/login').catch(e=>{
+            throw e;
+        });
     }
 });
 Axios.interceptors.response.use(response => {
     const status = response.data.status;
     if (status === 410) {
-        router.push('/login').catch(e=>{});
+        router.push('/login').catch(e=>{
+            throw e;
+        });
     }
 });
 

@@ -25,12 +25,12 @@ module.exports = appInfo => {
         prefix: '/',
     };
     config.security = securityConfig.security;
-    config.cors = securityConfig.cors;
+    // config.cors = securityConfig.cors;
     config.mysql = mysqlConfig;
     config.multipart = multipartConfig;
     config.middleware = [ 'certification' ];
     config.certification = {
-        ignore: [ '/code', '/login' ],
+        ignore: [ '/', '/code', '/login' ],
     };
     // add your user config here
     const userConfig = {

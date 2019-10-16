@@ -4,7 +4,7 @@ export const hostConfig = {
 };
 
 let origin = `http://${hostConfig.host}:${hostConfig.port}`;
-// origin = '';
+origin = '';
 import {Cookies} from "../utils/Cookies";
 export const csrfToken = Cookies.getCookies('csrfToken');
 const routerConfig = {
