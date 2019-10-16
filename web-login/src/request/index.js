@@ -1,7 +1,6 @@
 import fly from 'flyio';
 import routerConfig, {csrfToken} from "./router-config";
 import router from "../router";
-import Axios from "axios";
 import store from "../store";
 
 fly.interceptors.request.use((request) => {
@@ -11,14 +10,6 @@ fly.interceptors.request.use((request) => {
     return request;
 });
 fly.interceptors.response.use(response => {
-    const status = response.data.status;
-    if (status === 410) {
-        router.push('/login').catch(e=>{
-            throw e;
-        });
-    }
-});
-Axios.interceptors.response.use(response => {
     const status = response.data.status;
     if (status === 410) {
         router.push('/login').catch(e=>{
