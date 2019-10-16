@@ -2,7 +2,7 @@ export default {
   columns: [
     {
       title: "id",
-      width: 180,
+      width: 80,
       prop: "id"
     },
     {
@@ -17,7 +17,7 @@ export default {
     },
     {
       title: "文件大小",
-      width: 180,
+      width: 100,
       prop: "fileSize",
       formatter: function (row, column, cellValue) {
         return `${(Number.parseFloat(cellValue)/1024/1000).toFixed(2)}M`;
@@ -33,7 +33,8 @@ export default {
     },
     {
       title: "文件描述",
-      prop: "description"
+      prop: "description",
+      "show-overflow-tooltip": true,
     }
   ]
 }

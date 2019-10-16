@@ -19,7 +19,7 @@ const store = new Vuex.Store({
     },
     getters:{
       getToken:(state)=> {
-          if (!state.token) {
+          if (!state.token && state.token === '') {
               state.token = sessionStorage.getItem("token");
           }
           return state.token;

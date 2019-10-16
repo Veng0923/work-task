@@ -33,7 +33,8 @@ class FileController extends Controller {
      */
     async delete() {
         const { ctx } = this;
-        const { list } = ctx.request.body;
+        // const { list } = ctx.request.body;
+        const { list } = ctx.params;
         ctx.body = await ctx.service.file.delete(list);
     }
 
@@ -46,6 +47,12 @@ class FileController extends Controller {
         const { id } = ctx.params;
         const { fileName, description } = ctx.request.body;
         ctx.body = await ctx.service.file.update(id, fileName, description);
+    }
+
+    async download() {
+        const { ctx } = this;
+        const { id } = ctx.params;
+        await ctx.service.file.download(id);
     }
 }
 

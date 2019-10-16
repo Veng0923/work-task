@@ -2,26 +2,35 @@ import fly from 'flyio';
 import routerConfig from "./router-config";
 import router from "../router";
 import Axios from "axios";
+import store from "../store";
+import {csrfToken} from "./router-config";
 
-// import {Cookies} from "../utils/Cookies";
-Axios.interceptors.request.use(config=>{
+Axios.interceptors.request.use(config => {
     config.withCredentials = true;
     return config;
 });
-// const csrf_token = Cookies.getCookies('csrfToken');
-fly.interceptors.request.use((request)=>{
+
+
+fly.interceptors.request.use((request) => {
     //给所有请求添加自定义header
-    // request.headers["x-csrf-token"]= csrf_token;
-    request.withCredentials = true;
-    // request.body.credentials = true;
+    request.headers["x-csrf-token"]= csrfToken;
+    // request.withCredentials = true;
+    request.headers["token"] = store.getters.getToken;
     return request;
 });
-fly.interceptors.response.use(response=>{
+fly.interceptors.response.use(response => {
     const status = response.data.status;
-    if (status === 410){
-        router.push('/login');
+    if (status === 410) {
+        router.push('/login').catch(e=>{});
     }
 });
+Axios.interceptors.response.use(response => {
+    const status = response.data.status;
+    if (status === 410) {
+        router.push('/login').catch(e=>{});
+    }
+});
+
 /**
  * 登陆验证
  * @param username 用户账号
@@ -29,12 +38,12 @@ fly.interceptors.response.use(response=>{
  * @param code 验证码
  * @returns {Promise<*>}
  */
-export async function login(username,password,code) {
-    return fly.post(routerConfig.login,{
+export async function login(username, password, code) {
+    return fly.post(routerConfig.login, {
         username,
         password,
         code,
-    }).then(response=>{
+    }).then(response => {
         return response.data;
     });
 }
@@ -44,7 +53,7 @@ export async function login(username,password,code) {
  * @returns {Promise<*>}
  */
 export async function getCode() {
-    return fly.get(routerConfig.code,{}).then(response=>{
+    return fly.get(routerConfig.code, {}).then(response => {
         return response.data;
     });
 }
@@ -56,8 +65,8 @@ export async function getCode() {
  * @param size 每页大小
  * @returns {Promise<*>}
  */
-export async function getFileList( query, page, size ) {
-    return fly.get(routerConfig.file,{query,page,size}).then(response=>{
+export async function getFileList(query, page, size) {
+    return fly.get(routerConfig.file, {query, page, size}).then(response => {
         return response.data.data;
     });
 }
@@ -67,15 +76,18 @@ export async function getFileList( query, page, size ) {
  * @param list 文件id列表 [1,2,3,...]
  * @returns {Promise<*>}
  */
-export async function deleteFiles(list){
-    // return fly.delete(routerConfig.file+`/${list}`).then(response=>{
-    //     return response.data;
-    // });
-    return Axios.delete(routerConfig.file,{
-        data:{list},
-    }).then(response=>{
+export async function deleteFiles(list) {
+    return fly.delete(routerConfig.file+`/${list}`).then(response=>{
         return response.data;
     });
+    // return Axios.delete(routerConfig.file, {
+    //     data: {list},
+    // }).then(function(response){
+    //     debugger;
+    //     return response;
+    // }).catch(e=>{
+    //     return e;
+    // });
 }
 
 /**
@@ -85,9 +97,32 @@ export async function deleteFiles(list){
  * @param description 文件描述
  * @returns {Promise<*>}
  */
-export async function updateFile(id,fileName, description) {
-    return fly.put(`${routerConfig.file}/${id}`,{fileName,description}).then(response=>{
+export async function updateFile(id, fileName, description) {
+    return fly.put(`${routerConfig.file}/${id}`, {fileName, description}).then(response => {
         return response.data;
     });
 }
 
+export async function downloadFile(id,filename) {
+    // window.open(`${routerConfig.downloadFile}/${id}`, '_blank');
+    return fly.get(`${routerConfig.downloadFile}/${id}`,null,{
+        gzip:true,
+        headers:{
+            'Content-Type': 'application/octet-stream',
+        },
+        responseType: 'blob',
+    }).then(response=>{
+        const blob = response.data;
+        const reader = new FileReader();
+        reader.readAsDataURL(blob);
+        reader.onload = () => {
+            const a = document.createElement('a');
+            a.download = filename;
+            // 后端设置的文件名称在res.headers的 "content-disposition": "form-data; name=\"attachment\"; filename=\"20181211191944.zip\"",
+            a.href = window.URL.createObjectURL(blob);
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        };
+    });
+}

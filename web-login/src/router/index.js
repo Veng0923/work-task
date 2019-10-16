@@ -24,8 +24,9 @@ export const routes = [
                     icon: 'el-icon-folder-opened',
                     title: `文件管理`,
                     requiresAuth: true,
-                }
+                },
             },
+
         ],
     },
     {path: `/login`,component: login,meta:{requiresAuth: false}},

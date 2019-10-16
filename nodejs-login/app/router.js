@@ -12,5 +12,6 @@ module.exports = app => {
     router.post('/upload', controller.file.file.upload);
     router.get('/file', controller.file.file.query);
     router.put('/file/:id', controller.file.file.update);
-    router.delete('/file/', controller.file.file.delete);
+    router.delete('/file/:list', controller.file.file.delete);
+    router.get('/file/download/:id', controller.file.file.download);
 };

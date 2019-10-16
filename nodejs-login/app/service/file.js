@@ -58,6 +58,13 @@ class fileService extends Service {
         return responseCode.success;
     }
 
+    /*
+     * 查询文件
+     * @param query 查询关键字
+     * @param page 查询页面
+     * @param size 页面大小
+     * @returns {Promise<{data: {size: *, totalPage: *, currentPage: *, fileList: *}, message: string, status: number}|module.exports.notLogin|{message, status}>}
+     */
     async query(query, page = 1, size = 10) {
         const { ctx } = this;
         const mysql = this.app.mysql;
@@ -87,16 +94,21 @@ class fileService extends Service {
         };
     }
 
+    /*
+     * 删除文件
+     * @param list 文件id list [1,2,3,....]
+     * @returns {Promise<module.exports.success|{message, status}|module.exports.notLogin|{message, status}>}
+     */
     async delete(list) {
-        // list = list.split(',');
+        list = list.split(',');
         const transaction = await this.app.mysql.beginTransaction();
         try {
-            let sql = 'delete from `file` f where f.id in (?)';
-            await transaction.query(sql, [ list ]);
             const loginUsername = this.ctx.session.loginUsername;
             if (loginUsername === undefined || loginUsername === null) {
                 return responseCode.notLogin;
             }
+            let sql = 'delete from `file` f where f.id in (?)';
+            await transaction.query(sql, [ list ]);
             sql = 'delete from `user_file` where username=? and file_id in (?)';
             await transaction.query(sql, [ loginUsername, list ]);
             await transaction.commit();
@@ -107,6 +119,13 @@ class fileService extends Service {
         return responseCode.success;
     }
 
+    /*
+     * 更新文件
+     * @param id 文件id
+     * @param fileName 更新后的文件名
+     * @param description 更新后的文件描述
+     * @returns {Promise<module.exports.success|{message, status}>}
+     */
     async update(id, fileName, description) {
         try {
             await this.app.mysql.update('file', { id, file_name: fileName, description });
@@ -114,6 +133,19 @@ class fileService extends Service {
         } catch (e) {
             throw e;
         }
+    }
+
+    /*
+     * 下载文件
+     * @param id 要下载的文件id
+     */
+    async download(id) {
+        const file = await this.app.mysql.get('file', { id });
+        const { fast_id: fastId, file_name: fileName } = file;
+        const writer = fs.createWriteStream(fileName);
+        await fastDFSClinet.download(fastId, writer);
+        this.ctx.set('file-name', `${fileName}`);
+        this.ctx.body = fs.createReadStream(fileName);
     }
 }
 

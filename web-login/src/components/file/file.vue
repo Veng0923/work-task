@@ -24,6 +24,8 @@
                     class="table"
                     :data="tableData"
                     border
+                    v-loading="loading"
+                    :row-style="rowStyle"
                     @selection-change="handleSelectionChange"
                     style="width: 100%">
                 <el-table-column
@@ -64,6 +66,11 @@
                         background
                         layout="prev, pager, next"
                         :page-size="size"
+                        :pager-count="size"
+                        :current-page="page"
+                        @prev-click="prePage"
+                        @next-click="nextPage"
+                        @current-change="pageChange"
                         :page-count="totalPage">
                 </el-pagination>
             </el-col>
@@ -81,6 +88,7 @@
                         :with-credentials="true"
                         :on-success="handleUploadSuccess"
                         :on-error="handleUploadError"
+                        :headers="{'x-csrf-token': csrfToken,token:this.$store.getters.getToken}"
                         :data="{fileName:this.dialogForm.fileName,description: this.dialogForm.description}"
                         drag>
                     <i class="el-icon-upload"></i>
@@ -126,7 +134,8 @@
     import fileData from './file-data';
     import fileColumns from './file-column-setting';
     import routerConfig from "../../request/router-config";
-    import {getFileList,deleteFiles,updateFile} from "../../request";
+    import {csrfToken} from "../../request/router-config";
+    import {getFileList,deleteFiles,updateFile,downloadFile} from "../../request";
     import {string,value} from "./resource";
     export default {
         name: "list",
@@ -136,9 +145,11 @@
                 string: string,
                 value: value,
                 page:1,
-                size:10,
+                size:7,
                 totalPage:1,
+                csrfToken: csrfToken,
                 tableData: fileData,
+                loading: false,
                 columns: fileColumns.columns,
                 toggleDelete: false,
                 multipleSelection: [],
@@ -224,22 +235,22 @@
                 this.updateIndex = index;
             },
             handleDelete(index,row){
-                deleteFiles([row.id,1]).then(result=>{
+                deleteFiles([row.id]).then(result=>{
                     if (result.status === 200) {
                         this.notify(string.deleteFileSuccess);
                         this.tableData.splice(index,1);
-                    }else{
-                        alert(result.message);
                     }
                 });
             },
             handleDownload(index,row){
-
+                downloadFile(row.id,row.fileName);
             },
             getFileList(){
+                this.loading = true;
                 getFileList(this.queryText,this.page,this.size).then(data=>{
                     this.tableData = data.fileList;
                     this.totalPage = data.totalPage;
+                    this.loading = false;
                 });
             },
             notify(message,title=string.success,type=string.success){
@@ -260,6 +271,21 @@
                         this.notify(serverError,error,error);
                     }
                 });
+            },
+            prePage(){
+                this.page -=1;
+                this.getFileList();
+            },
+            nextPage(){
+                this.page += 1;
+                this.getFileList();
+            },
+            pageChange(page){
+                this.page = page;
+                this.getFileList();
+            },
+            rowStyle(){
+                return "transition: transform 1.5s";
             }
         }
     }
