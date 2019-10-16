@@ -7,7 +7,7 @@
             text-color="#fff"
             :collapse="isCollapse"
             :collapse-transition="true"
-            :style="{'min-height': windowHeight,width: setting.width}"
+            :style="{'min-height': 'calc(100vh)',width: setting.width}"
             @open="setTitle"
             active-text-color="#ffd04b">
         <component v-for="item in menu" :key="item.path" :is="item.children&&item.children.length>0?'el-submenu':'el-menu-item'" :index="item.path">
@@ -42,11 +42,6 @@
         },
         created() {
 
-        },
-        computed: {
-            windowHeight() {
-                return `${window.innerHeight}px`;
-            },
         },
         methods:{
             setTitle(){
