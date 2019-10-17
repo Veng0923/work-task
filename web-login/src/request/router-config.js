@@ -19,4 +19,8 @@ const routerConfig = {
     file: `${origin}/file`,
     downloadFile: `${origin}/file/download`,
 };
+
+export const string = {
+    error: 'error',
+};
 export default routerConfig;

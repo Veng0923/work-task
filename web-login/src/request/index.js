@@ -1,13 +1,8 @@
 import fly from 'flyio';
-import routerConfig from "./router-config";
+import routerConfig, {string} from "./router-config";
 import router from "../router";
-import Axios from "axios";
 import store from "../store";
 
-Axios.interceptors.request.use(config => {
-    config.withCredentials = true;
-    return config;
-});
 
 
 fly.interceptors.request.use((request) => {
@@ -19,12 +14,11 @@ fly.interceptors.response.use(response => {
     const status = response.data.status;
     if (status === 410) {
         router.push('/login').catch(e=>{});
-    }
-});
-Axios.interceptors.response.use(response => {
-    const status = response.data.status;
-    if (status === 410) {
-        router.push('/login').catch(e=>{});
+    }else if (status === 500){
+        this.$notify({
+            title: string.error,
+            message: response.data.message,
+        });
     }
 });
 
@@ -77,14 +71,6 @@ export async function deleteFiles(list) {
     return fly.delete(routerConfig.file+`/${list}`).then(response=>{
         return response.data;
     });
-    // return Axios.delete(routerConfig.file, {
-    //     data: {list},
-    // }).then(function(response){
-    //     debugger;
-    //     return response;
-    // }).catch(e=>{
-    //     return e;
-    // });
 }
 
 /**
