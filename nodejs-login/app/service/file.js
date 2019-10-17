@@ -23,7 +23,13 @@ class fileService extends Service {
             ext: extname,
         }).then(fileId => {
             return fileId;
-        }).catch(error => { throw error; });
+        }).catch(error => {
+            console.log(error);
+            return false;
+        });
+        if (!fileId) {
+            return responseCode.trackerLog;
+        }
         const transaction = await mysql.beginTransaction();
         try {
             const insert_file = await transaction.insert('file', {

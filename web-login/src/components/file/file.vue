@@ -208,10 +208,14 @@
                     fileList.shift();
                 }
             },
-            handleUploadSuccess(){
-                this.getFileList();
-                this.isDialogShow = false;
-                this.notify(string.fileUploadSuccess);
+            handleUploadSuccess(response){
+                if (response.status === 500) {
+                    this.notify(response.message,string.error,string.error);
+                }else{
+                    this.getFileList();
+                    this.isDialogShow = false;
+                    this.notify(string.fileUploadSuccess);
+                }
             },
             handleUploadError(error){
                 let message = string.fileUploadFailed;
