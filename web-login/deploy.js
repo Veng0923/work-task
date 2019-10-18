@@ -1,8 +1,19 @@
 const fs = require('fs');
+const process = require("process");
 
-const distDir = './dist';
-const publicTargetPath = '../nodejs-login/app/public';
-const viewTargetPath = '../nodejs-login/app/view';
+const argv = process.argv.slice(2);
+if (argv.length === 0){
+    console.log('请输入有效路径');
+    return;
+}
+if (argv.length ===1){
+    console.log('请输入后端路径');
+    return;
+}
+const distDir = `${argv[0]}/dist`;
+const nodejsPath = argv[1];
+const publicTargetPath = `${nodejsPath}/app/public`;
+const viewTargetPath = `${nodejsPath}/app/view`;
 const childProcess = require("child_process");
 console.log('依赖开始下载');
 childProcess.execFileSync('npm', ['install']);
